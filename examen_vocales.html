@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de las vocales</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.comcss2?family=Fredoka:wght@400;600@700&display=swap">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Fredoka', 'Baloo 2', 'Comic Sans', sans-serif;
+            color: #1b6b6b;
+            background-color: #c8f0ff;
+            background-image:
+                radial-gradient(#ffffff 4px, transparent 4px),
+                radial-gradient(#ffe066 4px, trasnparent 4px);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+        }
+
+        .contenedor {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem 3rem;
+        }
+
+        /* TITULO */
+        h1 {
+            font-size: clamp(2.6rem, 9vw, 6rem);
+            color: #ffffff;
+            background-color: yellowgreen;
+            border: 6px solid darkgreen;
+            border-radius: 2rem;
+            box-shadow: 5px 8px 5px darkgreen;
+            text-shadow: 4px 4px 0 darkgreen;
+            text-transform: capitalize;
+            text-align: center;
+            margin: 1rem 0 2rem;
+            padding: .3rem 1rem;
+        }
+
+        h1::before {
+            content: '★';
+            color: #ffe066;
+        }
+
+        h1::after {
+            content: '★';
+            color: #ffe066;
+        }
+
+        .controles {
+            font-size: 1.6rem;
+            color: darkcyan;
+            text-transform: uppercase;
+            text-align: center;
+            background-color: #ffffff;
+            border: 5px solid lightseagreen;
+            border-radius: 2rem;
+            box-shadow: 5px 8px 5px darkcyan;
+            padding: 1.5rem 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .controles label {
+            display: block;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        #intro_texto {
+            font-family: inherit;
+            font-size: 2rem;
+            color: darkcyan;
+            background-color: #f4fff0;
+            border: 4px solid yellowgreen;
+            border-radius: 1rem;
+            padding: .4rem 1rem;
+            outline: none;
+            max-width: 90%;
+        }
+
+        #intro_texto:focus {
+            border-color: orange;
+            box-shadow: 0 0 0 5px #ffe8b3;
+        }
+
+        .inicio {
+            font-family: inherit;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            background-color: yellowgreen;
+            border: 0;
+            border-radius: 1rem;
+            padding: .4rem 1.5rem;
+            margin-top: .5rem;
+            box-shadow: 5px 6px 5px darkgreen;
+            cursor: pointer;
+            transition: transform .1s, box-shadow .1s;
+        }
+
+        .inicio:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 1px 0 darkgreen;
+        }
+
+        .inicio:active {
+            transform: translateY(5px);
+            box-shadow: 0 1px 0 darkgreen;
+        }
+
+        /* PANTALLA DE JUEGO */
+        .pantalla {
+            background-color: #ffffff;
+            background-image: repeating-linear-gradient(45deg, #eaf9ff 0 20px, #ffffff 20px 40px);
+            border: 6px solid darkcyan;
+            border-radius: 2.5rem;
+            box-shadow: 5px 10px 5px darkcyan;
+            min-height: 200px;
+            text-align: center;
+            padding: 2rem 1rem 1rem;
+            margin: 2rem auto;
+        }
+
+        /* CAJA POR LETRA */
+        .salida{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: .7rem;
+            margin: 0 1rem;
+        }
+
+        .salida span{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            min-width: 1.4em;
+            min-height: 1.5em;
+            padding: 0 0 .3rem;
+            font-size: clamp(2.5rem, 8vw, 5.5rem);
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 2px 2px 0 rgba(0,0,0,.3);
+            border: 4px solid rgba(0,0,0,.25);
+            border-radius: 1rem;
+            box-shadow: 0 6px 0 rgba(0,0,0,.25);
+        }
+
+        /* CONSONANTES EN COLORES */
+        .salida span:nth-child(5n+1){background-color: #ff6b6b;}
+        .salida span:nth-child(5n+2){background-color: #ffa94d;}
+        .salida span:nth-child(5n+3){background-color: #69db7c;}
+        .salida span:nth-child(5n+4){background-color: #4dabf7;}
+        .salida span:nth-child(5n+5){background-color: #B197FC;}
+
+        /* ESPACIO ENTRE PALABRAS */
+        .salida span.espacio{
+            min-width: 2rem;
+            background-color: transparent;
+            border: 0;
+            box-shadow: none;
+        }
+        /* VOCAL OCULTA */
+        .salida span.vocal-oculta{
+            background-color: #ffffff;
+            color: #adb5bd;
+            text-shadow: none;
+            border: 4px dashes #74c0fc;
+            box-shadow: 0 6px 0 rgba(0,0,0,.12);
+        }
+
+        .salida span.vocal-oculta::before{
+            content: '?';
+        }
+
+        /* VOCAL DESCUBIERTA */
+        .salida span.acierto{
+            background-color: #ffe066;
+            color: #e8590c;
+            text-shadow: none;
+            border: 4px solid #f59f00;
+            box-shadow: 0 6px 0 #f59f00, 0 0 18px #ffe066;
+            animation: rebota .6s ease;
+        }
+
+        /* LISTA ERRORES */
+        .errores{
+            margin: 1.5rem auto;
+        }
+
+        .let-err {
+            display: inline-block;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            background-color: red;
+            border: 4px solid darkred;
+            border-radius: 1rem;
+            box-shadow: 0 5px 0 darkred;
+            padding: .1rem 1rem;
+            margin: .3rem;
+            animation: aparece .5s ease;
+        }
+
+        /* CONTADOR DE ERRORES */
+        .intentos {
+            display: inline-block;
+            font-size: clamp(2rem,6vw,3.5rem);
+            font-weight: 700;
+            color: red;
+            background-color: #ffffff;
+            border: 4px solid red;
+            border-radius: 2rem;
+            padding: 0 1.2rem;
+        }
+
+        .intentos:empty{
+            display: none;
+        }
+
+        /* MENSAJES */
+        .mensaje{
+            display: inline-block;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-weight: 700;
+            color: darkgreen;
+            background-color: #fff3bf;
+            border: 4px solid #fab005;
+            border-radius: 2rem;
+            padding: .5rem 1.5rem;
+            margin: 1rem auto;
+            animation: asparece .8s ease;
+        }
+
+        .reiniciar{
+            font-family: inherit;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            background-color: #ff6b6b;
+            border: 0;
+            border-radius: 1rem;
+            padding: .4rem 1.5rem;
+            box-shadow: 0 6px 0 #c92a2a;
+            text-shadow: 2px 2px 0 #c92a2a;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            transition: transform .1s, box-shadow .1s;
+        }
+        .reiniciar:hover{
+            transform: translateY(-3px);
+        }
+        .reiniciar:active{
+            transform: translateY(5px);
+            box-shadow: 0 1px 0 #c92a2a;
+        }
+
+        /* BOTONERA */
+        .botonera{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            max-width: 740px;
+            margin: 2.5rem auto;
+        }
+
+        .btn-letra{
+            width: clamp(70px,16vw,110px);
+            padding: .2rem 0 .4rem;
+            font-size: cla,p(3rem,10vw,6rem);
+            font-weight: 700;
+            line-height: 1.2;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 3px 3px 0 rgba(0,0,0,.3);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 0 rgba(0,0,0,.3);
+            cursor: pointer;
+            user-select: none;
+            transition: transform .1s, box-shadow .1s;
+        }
+        .botonera .btn-letra:nth-child(1){background-color: #ff6b6b;}
+        .botonera .btn-letra:nth-child(2){background-color:#ffa94d ;}
+        .botonera .btn-letra:nth-child(3){background-color:#fcc419 ;}
+        .botonera .btn-letra:nth-child(4){background-color:#51cf66 ;}
+        .botonera .btn-letra:nth-child(5){background-color:#4dabf7 ;}
+
+        .btn-letra:hover{
+            transform: translateY(-5px)rotate(-3deg);
+            box-shadow: 0 13px 0 rgba(0,0,0,.3);
+        }
+
+        .btn-letra:active{
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 rgba(0,0,0,.3);
+        }
+
+        .btn-letra.usada{
+            opacity: .35;
+            pointer-events: none;
+            box-shadow: none;
+            transform: translateY(6px);
+        }
+
+        /* INSTRUCCIONES */
+        h3{
+            font-size: 2rem;
+            color: darkcyan;
+        }
+
+        .contenedor > p, .contenedor li{
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #2b6777;
+        }
+
+        /* UTILIDADES JAVA */
+        .oculto{
+            display: none!important;
+        }
+
+        .sacude{
+            animation: sacude .4s ease;
+        }
+
+        /* ANIMACIONES */
+        @keyframes aparece{
+            from{opacity: 0;transform: scale(0.3);}
+            to{opacity: 1; transform: scale(1);}
+        }
+
+        @keyframes rebota{
+            0%{transform: scale(0.3) rotate(-10deg);}
+            60%{transform: scale(1.25) rotate(6deg);}
+            100%{transform: scale(1) rotate(0);}
+        }
+
+        @keyframes sacude{
+            0%,100%{transform: translateX(0);}
+            25%{transform: translateX(-10px);}
+            75%{transform: translateX(10px);}
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <div class="contendor">
+        <h1>Busca Vocales</h1>
+        <div class="controles">
+            <label for="intro_texto">Esconde la palabra misteriosa</label>
+            <input type="password" name="intro_texto" id="intro_texto">
+            <button class="inicio">Empezar</button>
+        </div>
+        <div class="pantalla">
+            <p class="salida"></p>
+
+            <div>
+                <p class="errores"></p>
+            </div>
+            <p><span class="intentos"></span></p>
+            <p class="mensaje oculto"></p>
+            <button class="reiniciar oculto">Jugar de nuevo</button>
+        </div>
+        <div class="botonera">
+            <span class="btn-letra">A</span>
+            <span class="btn-letra">E</span>
+            <span class="btn-letra">I</span>
+            <span class="btn-letra">O</span>
+            <span class="btn-letra">U</span>
+        </div>
+        
+    </div>
+    <script>
+
+        let vocales = 'aeiouáéíóúàèìòùü';
+
+
+        function limpiaLetra(letra) {
+            letra = letra.toLowerCase();
+            let letra_s = '';
+            switch (letra) {
+                case 'á':
+                case 'à':
+                    letra_s = 'a';
+                    break;
+                case 'é':
+                case 'è':
+                    letra_s = 'e';
+                    break;
+                case 'í':
+                case 'ì':
+                    letra_s = 'i';
+                    break;
+                case 'ó':
+                case 'ò':
+                    letra_s = 'o';
+                    break;
+                case 'ú':
+                case 'ù':
+                case 'ü':
+                    letra_s = 'u';
+                    break;
+                default:
+                    letra_s = letra;
+                    break;
+            }
+            return letra_s;
+        }
+        //NUEVO
+        //REFERENCIAS AL DOM
+        const input = document.querySelector('#intro_texto');
+        const btnEmpezar = document.querySelector('.inicio');
+        const controles = document.querySelector('.controles');
+        const salida = document.querySelector('.salida');
+        const errores = document.querySelector('.errores');
+        const intentos = document.querySelector('.intentos');
+        const mensaje = document.querySelector('.mensaje');
+        const btnReiniciar = document.querySelector('.reiniciar');
+        const botones = document.querySelectorAll('.btn-letra');
+
+        //estado del juego
+        let juegoActivo = false;//no salen vocales si las presiono antes o despues de ganar
+        let numErrores = 0;
+
+        //dice si el caracter es una vocal (usa la variable vocales)
+        function esVocal(letra) {
+            return vocales.includes(letra.toLowerCase());
+        }
+        //pinta contador de errores
+        function actualizaContador() {
+            intentos.textContent = 'Errores: ' + numErrores;
+        }
+        //crear casillero, una caja por cada vocal
+        function empezar() {
+            const palabra = input.value.trim();
+            //si input esta vacio, se sacude y no empieza
+            if (palabra === '') {
+                input.classList.add('sacude');
+                input.addEventListener('animationend', () => input.classList.remove('sacude'), { once: true });
+                input.focus();
+                return;
+            }
+            salida.innerHTML = '';
+            errores.innerHTML = '';
+            numErrores = 0;
+            actualizaContador();
+
+            //una caja (span) por cada carácter de la palabra
+            for (const caracter of palabra) {
+                const caja = document.createElement('span');
+                if (caracter === ' ') {
+                    caja.classList.add('espacio');
+                } else if (esVocal(caracter)) {
+                    //vocal oculta, se guarda su version original y sin tilde
+                    caja.classList.add('vocal-oculta');
+                    caja.dataset.vocal = limpiaLetra(caracter);
+                    caja.dataset.original = caracter;
+                } else {
+                    caja.textContent = caracter;//consonantes se ven
+                }
+                salida.appendChild(caja);
+            }
+            controles.classList.add('oculto');//se ocultan los controles
+            juegoActivo = true;
+            comprobarVictoria();
+        }
+
+        //se llama al hacer click en una vocal de botonera
+        function pulsaVocal(boton) {
+            if (!juegoActivo) return;
+
+            const letra = limpiaLetra(boton.textContent);
+            boton.classList.add('usada');
+
+            //buscar cajas ocultas que correspondan a la vocal
+            const cajas = salida.querySelectorAll('.vocal-oculta[data-vocal="' + letra + '"]');
+
+            if (cajas.length > 0) {
+                //acierto se muestra la vocal con tilde original
+                cajas.forEach(caja => {
+                    caja.textContent = caja.dataset.original;
+                    caja.classList.remove('vocal-oculta');
+                    caja.classList.add('acierto');
+                });
+                comprobarVictoria();
+            } else {
+                //error se añade a lista de errores y sube el contador
+                const error = document.createElement('span');
+                error.classList.add('let-err');
+                error.textContent = boton.textContent;
+                errores.appendChild(error);
+                numErrores++;
+                actualizaContador();
+            }
+        }
+        //si ya no quedan vocales ocultas se gana
+        function comprobarVictoria() {
+            if (salida.querySelectorAll('.vocal-oculta').length === 0) {
+                juegoActivo = false;
+                mensaje.textContent = numErrores === 0
+                    ? 'Genial! Has completado la palabra sin errores'
+                    : 'Muy bien! Has completado la palabra';
+                mensaje.classList.remove('oculto');
+                btnReiniciar.classList.remove('oculto');
+            }
+        }
+        //EXTRA vuelve al estado inicial (creo jeje)
+        function reiniciar() {
+            juegoActivo = false;
+            salida.innerHTML = '';
+            errores.innerHTML = '';
+            intentos.textContent = '';
+            numErrores = 0;
+            input.value = '';
+            mensaje.classList.add('oculto');
+            btnReiniciar.classList.add('oculto');
+            botones.forEach(b => b.classList.remove('usada'));
+            controles.classList.remove('oculto');
+            input.focus();
+        }
+        //eventos
+        btnEmpezar.addEventListener('click', empezar);
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') empezar();
+        });
+        botones.forEach(boton => boton.addEventListener('click', () => pulsaVocal(boton)));
+        btnReiniciar.addEventListener('click', reiniciar);
+
+    </script>
+</body>
+
+</html>
